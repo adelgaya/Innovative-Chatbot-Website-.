@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="chatbox.css">
+</head>
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const messages = [
+      "Hello! Feel free to send me a message! :)",
+      "Hey there! What’s on your mind? ;)",
+      "Hi! How can I assist you today? :D",
+      "Hello! Type anything to start our chat ^_^",
+      "Hey! Let’s talk. What’s up? :P",
+      "Hi! I’m here to chat. Say something! :o",
+      "Hello! Ask me anything. :)",
+      "Hey! Tell me what you’re thinking about ;D",
+      "Hi there! Ready to chat? :)",
+      "Hello! What would you like to talk about? :3"];
+
+    const chatContainer = document.getElementById('chat-messages');
+
+    function addBotMessage(text) {
+      const wrapper = document.createElement('div');
+      wrapper.classList.add('chat-message');
+
+      const avatar = document.createElement('div');
+      avatar.classList.add('chat-avatar');
+
+      const textElement = document.createElement('div');
+      textElement.classList.add('chat-text');
+
+      wrapper.appendChild(avatar);
+      wrapper.appendChild(textElement);
+      chatContainer.appendChild(wrapper);
+
+      let index = 0;
+
+      function typeMessage() {
+        if (index < text.length) {
+          textElement.textContent += text[index];
+          index++;
+          setTimeout(typeMessage, 25);
+        } else {
+          const cursor = document.createElement('span');
+          cursor.classList.add('cursor');
+          textElement.appendChild(cursor);
+        }
+      }
+
+      typeMessage();
+    }
+
+    // Démarrer après 1s
+    setTimeout(() => {
+      const random = messages[Math.floor(Math.random() * messages.length)];
+      addBotMessage(random);
+    }, 1000);
+  });
+</script>
+
+
+<body>
+    
+    <header>
+        <h1 class="logo">Assistant AI</h1>
+             
+            <button class="btn-signing">SINGNING</button>
+    </header>
+    <div class="content"> </div>
+        <a class="button-rond" onclick="location.href='homepage.html'"> &#x25C0; </a>
+        <div class="tag-box">
+          <div class="tag" id="chat-messages">
+            <!-- Les messages seront injectés ici -->
+          </div>
+        </div>
+        
+        
+    </div>
+    <div class="chat-section">
+      <input type="text" placeholder="Ask your question..." class="chat-input" id="chat-input" />
+      <button class="send-button" id="send-button">Send</button>
+    </div>
+
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        // Donne le focus directement à la barre d'entrée
+        document.querySelector('.chat-input').focus();
+      });
+    </script>
+    <script>
+      const chatBox = document.getElementById('chat-messages'); // à définir globalement
+    
+      // Fonction pour ajouter un message de l'utilisateur
+      function addUserMessage(text) {
+  const wrapper = document.createElement('div');
+  wrapper.classList.add('chat-message', 'user-message');
+
+  const textElement = document.createElement('div');
+  textElement.classList.add('chat-text');
+  textElement.textContent = text;
+
+  wrapper.appendChild(textElement);
+  chatBox.appendChild(wrapper);
+
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+    
+      // Écoute du bouton ou de la touche Entrée
+      const input = document.querySelector('.chat-input');
+      const sendBtn = document.querySelector('.send-button');
+    
+      sendBtn.addEventListener('click', () => {
+  const message = input.value.trim();
+  if (message) {
+    addUserMessage(message);
+    input.value = '';
+
+    fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: message })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const responseText = data.response;
+      addBotMessage(responseText);
+    });
+  }
+});
+
+    
+      // Écoute de la touche Entrée pour soumettre le message
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          sendBtn.click(); // Simuler un clic sur le bouton "Envoyer"
+        }
+      });
+    
+      // Focus automatique sur le champ de texte dès le chargement de la page
+      window.addEventListener('DOMContentLoaded', () => {
+        input.focus();
+      });
+    </script>
+
+    
+    
+    
+</body>
+</html>
